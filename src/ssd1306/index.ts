@@ -1,7 +1,8 @@
 import { GPIOController, GPIOOutputLine } from 'gpiod-client'
-import { Pins } from './pins'
+import { Pins } from './setup/pins'
 import { SPIDev } from 'spi-dev'
 import { SSD1306Setup } from './setup'
+import { SSD1306Content } from './content'
 
 /**
  * @see https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
@@ -14,6 +15,7 @@ export class SSD1306 {
     private readonly CS: GPIOOutputLine
     private readonly DC: GPIOOutputLine
 
+    public readonly content: SSD1306Content
     public readonly setup: SSD1306Setup
 
     public constructor(chipname: string, path: string, pins: Pins) {
@@ -31,7 +33,9 @@ export class SSD1306 {
             SPI_MODE: 0
         })
 
-        this.setup = new SSD1306Setup((op: number) => this.sendCommand(op))
+        this.content = new SSD1306Content(this)
+        this.setup = new SSD1306Setup(this)
+
         this.reset()
     }
 
@@ -55,6 +59,7 @@ export class SSD1306 {
         this.spidev.transfer(1, Uint8Array.from([cmd]))
         this.CS.setValue(1)
     }
+
 
     public release(): void {
         this.spidev.close()

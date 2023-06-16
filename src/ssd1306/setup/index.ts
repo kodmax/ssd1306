@@ -1,13 +1,14 @@
 import { MEMORY_ADDRESSING_MODE_HORIZONTAL, MEMORY_ADDRESSING_MODE_PAGE, MEMORY_ADDRESSING_MODE_VERTICAL } from './consts'
 import { MemoryAddressingMode } from './types'
+import { type SSD1306 } from '..'
 
 export class SSD1306Setup {
-    public constructor(private readonly cmd: (op: number) => void) { }
+    public constructor(private readonly device: SSD1306) { }
 
     public initialize(): void {
         this.setDisplayOff()
 
-        this.setMemoryAddressingMode('page')
+        this.setMemoryAddressingMode('horizontal')
         this.setContrastControl(0xff)
         this.setSegmentRemap()
         this.setInverseDisplay(false)
@@ -24,92 +25,92 @@ export class SSD1306Setup {
     }
 
     public setMemoryAddressingMode(mode: MemoryAddressingMode): void {
-        this.cmd(0x20)
+        this.device.sendCommand(0x20)
 
         switch (mode) {
             case 'horizontal':
-                this.cmd(MEMORY_ADDRESSING_MODE_HORIZONTAL)
+                this.device.sendCommand(MEMORY_ADDRESSING_MODE_HORIZONTAL)
                 break
 
             case 'vertical':
-                this.cmd(MEMORY_ADDRESSING_MODE_VERTICAL)
+                this.device.sendCommand(MEMORY_ADDRESSING_MODE_VERTICAL)
                 break
 
             default:
-                this.cmd(MEMORY_ADDRESSING_MODE_PAGE)
+                this.device.sendCommand(MEMORY_ADDRESSING_MODE_PAGE)
                 break
         }
     }
 
     public setDisplayOff(): void {
-        this.cmd(0xAE)
+        this.device.sendCommand(0xAE)
     }
 
     public setDisplayClock(value: number): void {
-        this.cmd(0xd5)
-        this.cmd(value)
+        this.device.sendCommand(0xd5)
+        this.device.sendCommand(value)
     }
 
     public setMultiplexRatio(value: number): void {
-        this.cmd(0xa8)
-        this.cmd(value)
+        this.device.sendCommand(0xa8)
+        this.device.sendCommand(value)
     }
 
     public setDisplayOffset(value: number): void {
-        this.cmd(0xd3)
-        this.cmd(value)
+        this.device.sendCommand(0xd3)
+        this.device.sendCommand(value)
     }
 
     public setDisplayStartLine(): void {
-        this.cmd(0x40) /*set display start line*/
+        this.device.sendCommand(0x40) /*set display start line*/
     }
 
     public setChargePump(value: number): void {
-        this.cmd(0x8d)
-        this.cmd(value)
+        this.device.sendCommand(0x8d)
+        this.device.sendCommand(value)
     }
 
     public setSegmentRemap(): void {
-        this.cmd(0xa1)
+        this.device.sendCommand(0xa1)
     }
 
     public setCOMOutputScanDirection(): void {
-        this.cmd(0xc8)
+        this.device.sendCommand(0xc8)
     }
 
     public setCOMPinsHardwareConfiguration(value: number): void {
-        this.cmd(0xda)
-        this.cmd(value)
+        this.device.sendCommand(0xda)
+        this.device.sendCommand(value)
     }
 
     public setContrastControl(value: number): void {
-        this.cmd(0x81)
-        this.cmd(value)
+        this.device.sendCommand(0x81)
+        this.device.sendCommand(value)
     }
 
     public setPreChargePeriod(value: number): void {
-        this.cmd(0xd9)
-        this.cmd(value)
+        this.device.sendCommand(0xd9)
+        this.device.sendCommand(value)
     }
 
     public setVCOMHDeselectLevel(value: number): void {
-        this.cmd(0xdb)
-        this.cmd(value)
+        this.device.sendCommand(0xdb)
+        this.device.sendCommand(value)
     }
 
     public setTestMode(test: boolean): void {
-        this.cmd(test ? 0xa5 : 0xa4)
+        this.device.sendCommand(test ? 0xa5 : 0xa4)
     }
 
     public setDisplayOn(): void {
-        this.cmd(0xaf)
+        this.device.sendCommand(0xaf)
     }
 
     public setInverseDisplay(value: boolean): void {
-        this.cmd(value ? 0xa7 : 0xa6)
+        this.device.sendCommand(value ? 0xa7 : 0xa6)
     }
 
     public setPageStart(value: number): void {
-        this.cmd(0xb0 + (value & 7))
+        this.device.sendCommand(0xb0 + (value & 7))
     }
 }
