@@ -18,7 +18,7 @@ export class SSD1306Setup {
         this.setCOMPinsHardwareConfiguration(0x12)
         this.setVCOMHDeselectLevel(0x40)
         this.setChargePump(0x14)
-        
+
         this.setColumnAddress(0, 127)
         this.setPageAddress(0, 7)
 

@@ -1,4 +1,4 @@
-import { convertBlock } from "./convert-block"
+import { convertBlock } from './convert-block'
 
 export const convertLinearToPages = (width: number, height: number, content: Uint8Array): Uint8Array => {
     const widthInBytes = width >> 3

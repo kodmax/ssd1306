@@ -72,15 +72,12 @@ export class SSD1306 {
     }
 
     public sendContentToDisplay(): void {
-
+        this.setup.setMemoryAddressingMode('horizontal')
         this.setup.setColumnAddress(0, 127)
         this.setup.setPageAddress(0, 7)
         this.setup.setPageStart(0)
-        
-        this.setup.setMemoryAddressingMode('page')
 
-        this.sendData(convertLinearToPages(this.height, this.width, this.content).slice(0, 128))
-        // this.sendData(new Uint8Array(16))
+        this.sendData(convertLinearToPages(this.width, this.height, this.content))
     }
 
     public release(): void {

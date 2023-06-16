@@ -4,7 +4,7 @@ export const convertBlock = (input: Uint8Array, output: Uint8Array, offset: numb
 
         for (let i = 0; i < 8; i++) {
             output[offset + col] += (input[i] & test) ? 1 << i : 0
-        }    
+        }
     }
 }
 
