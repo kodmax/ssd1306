@@ -1,24 +1,23 @@
 import { convertBlock } from "./convert-block"
 
-export const convertLinearToPages = (width: number, height: number, content: ArrayBuffer): Uint8Array => {
-    const data = new Uint8Array(content)
+export const convertLinearToPages = (width: number, height: number, content: Uint8Array): Uint8Array => {
     const widthInBytes = width >> 3
 
     const output = new Uint8Array(widthInBytes * height)
+    const input = new Uint8Array(8)
     let c = 0
 
     for (let y = 0; y < height; y += 8) {
         const offsetY = y * widthInBytes
 
-        for (let x = 0; x < width; x += 8) {
-            const offset = offsetY + (x >> 3)
+        for (let x = 0; x < widthInBytes; x ++) {
+            const offset = offsetY + x
 
-            const input = new Uint8Array(8)
             for (let i = 0; i < 8; i++) {
-                input[i] = data[offset + i * widthInBytes]
+                input[i] = content[offset + i * widthInBytes]
             }
 
-            output.set(convertBlock(input), c)
+            convertBlock(input, output, c)
             c += 8
         }
     }

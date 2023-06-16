@@ -8,8 +8,6 @@ export class SSD1306Setup {
     public initialize(): void {
         this.setDisplayOff()
 
-        this.setMemoryAddressingMode('horizontal')
-        this.setContrastControl(0xff)
         this.setSegmentRemap()
         this.setInverseDisplay(false)
         this.setMultiplexRatio(0x3f)
@@ -20,7 +18,15 @@ export class SSD1306Setup {
         this.setCOMPinsHardwareConfiguration(0x12)
         this.setVCOMHDeselectLevel(0x40)
         this.setChargePump(0x14)
+        
+        this.setColumnAddress(0, 127)
+        this.setPageAddress(0, 7)
 
+        this.setMemoryAddressingMode('page')
+        this.setColumnStart(0)
+        this.setPageStart(0)
+
+        this.setContrastControl(0xff)
         this.setDisplayOn()
     }
 
@@ -40,6 +46,27 @@ export class SSD1306Setup {
                 this.device.sendCommand(MEMORY_ADDRESSING_MODE_PAGE)
                 break
         }
+    }
+
+    public setColumnAddress(start: number, end: number): void {
+        this.device.sendCommand(0x21)
+        this.device.sendCommand(start)
+        this.device.sendCommand(end)
+    }
+
+    public setPageAddress(start: number, end: number): void {
+        this.device.sendCommand(0x22)
+        this.device.sendCommand(start)
+        this.device.sendCommand(end)
+    }
+
+    public setPageStart(value: number): void {
+        this.device.sendCommand(0xb0 + (value & 7))
+    }
+
+    public setColumnStart(index: number): void {
+        this.device.sendCommand(0x10 + ((index & 0xf0) >> 4))
+        this.device.sendCommand((index & 0x0f))
     }
 
     public setDisplayOff(): void {
@@ -108,9 +135,5 @@ export class SSD1306Setup {
 
     public setInverseDisplay(value: boolean): void {
         this.device.sendCommand(value ? 0xa7 : 0xa6)
-    }
-
-    public setPageStart(value: number): void {
-        this.device.sendCommand(0xb0 + (value & 7))
     }
 }

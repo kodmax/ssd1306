@@ -17,9 +17,9 @@ export class SSD1306 {
 
     public readonly setup: SSD1306Setup
 
-    private content: Uint8Array
-    private height = 64
-    private width = 128
+    private readonly content: Uint8Array
+    private readonly height = 64
+    private readonly width = 128
 
 
     public constructor(chipname: string, path: string, pins: Pins) {
@@ -63,18 +63,24 @@ export class SSD1306 {
         this.CS.setValue(1)
     }
 
-    public setContent(data: ArrayBuffer): void {
-        this.content = convertLinearToPages(this.height, this.width, data)
+    public setContent(data: Uint8Array): void {
+        this.content.set(data)
     }
 
-    public clear(): void {
-        this.setContent(this.content.fill(0))
+    public clear(value: 0 | 1 = 0): void {
+        this.content.fill(value)
     }
 
     public sendContentToDisplay(): void {
-        this.setup.setMemoryAddressingMode('horizontal')
+
+        this.setup.setColumnAddress(0, 127)
+        this.setup.setPageAddress(0, 7)
         this.setup.setPageStart(0)
-        this.sendData(this.content)
+        
+        this.setup.setMemoryAddressingMode('page')
+
+        this.sendData(convertLinearToPages(this.height, this.width, this.content).slice(0, 128))
+        // this.sendData(new Uint8Array(16))
     }
 
     public release(): void {
