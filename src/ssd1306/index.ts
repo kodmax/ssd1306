@@ -2,7 +2,7 @@ import { GPIOController, GPIOOutputLine } from 'gpiod-client'
 import { Pins } from './setup/pins'
 import { SPIDev } from 'spi-dev'
 import { SSD1306Setup } from './setup'
-import { Paged1BitContent } from './1-bit-paged-content'
+import { convertLinearToPages } from './memory-mapping/convert-l2p'
 
 /**
  * @see https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
@@ -15,8 +15,12 @@ export class SSD1306 {
     private readonly CS: GPIOOutputLine
     private readonly DC: GPIOOutputLine
 
-    public readonly content: Paged1BitContent
     public readonly setup: SSD1306Setup
+
+    private content: Uint8Array
+    private height = 64
+    private width = 128
+
 
     public constructor(chipname: string, path: string, pins: Pins) {
         this.gpio = new GPIOController(chipname, 'this')
@@ -33,9 +37,8 @@ export class SSD1306 {
             SPI_MODE: 0
         })
 
-        this.content = new Paged1BitContent(this, 128, 64, new Uint8Array(1024))
+        this.content = new Uint8Array((this.width >> 3) * this.height)
         this.setup = new SSD1306Setup(this)
-
         this.reset()
     }
 
@@ -60,6 +63,19 @@ export class SSD1306 {
         this.CS.setValue(1)
     }
 
+    public setContent(data: ArrayBuffer): void {
+        this.content = convertLinearToPages(this.height, this.width, data)
+    }
+
+    public clear(): void {
+        this.setContent(this.content.fill(0))
+    }
+
+    public sendContentToDisplay(): void {
+        this.setup.setMemoryAddressingMode('horizontal')
+        this.setup.setPageStart(0)
+        this.sendData(this.content)
+    }
 
     public release(): void {
         this.spidev.close()
