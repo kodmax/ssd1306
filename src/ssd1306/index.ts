@@ -2,7 +2,7 @@ import { GPIOController, GPIOOutputLine } from 'gpiod-client'
 import { Pins } from './setup/pins'
 import { SPIDev } from 'spi-dev'
 import { SSD1306Setup } from './setup'
-import { SSD1306Content } from './content'
+import { Paged1BitContent } from './1-bit-paged-content'
 
 /**
  * @see https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
@@ -15,7 +15,7 @@ export class SSD1306 {
     private readonly CS: GPIOOutputLine
     private readonly DC: GPIOOutputLine
 
-    public readonly content: SSD1306Content
+    public readonly content: Paged1BitContent
     public readonly setup: SSD1306Setup
 
     public constructor(chipname: string, path: string, pins: Pins) {
@@ -33,7 +33,7 @@ export class SSD1306 {
             SPI_MODE: 0
         })
 
-        this.content = new SSD1306Content(this)
+        this.content = new Paged1BitContent(this, 128, 64, new Uint8Array(1024))
         this.setup = new SSD1306Setup(this)
 
         this.reset()
