@@ -10,7 +10,7 @@ export const convertLinearToPages = (width: number, height: number, content: Arr
     for (let y = 0; y < height; y += 8) {
         const offsetY = y * widthInBytes
 
-        for (let x = 0; x < width; x += widthInBytes) {
+        for (let x = 0; x < width; x += 8) {
             const offset = offsetY + (x >> 3)
 
             const input = new Uint8Array(8)
