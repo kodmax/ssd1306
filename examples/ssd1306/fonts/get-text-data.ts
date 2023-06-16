@@ -1,4 +1,4 @@
-import { Pixel, fonts, renderPixels } from "js-pixel-fonts"
+import { Pixel, fonts, renderPixels } from 'js-pixel-fonts'
 
 const convertJsPixelFonts = (pixels: Pixel[][]): Uint8Array => {
     const data = new Uint8Array(128)

@@ -1,33 +1,44 @@
-/**
- * @see https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
- */
+import { MEMORY_ADDRESSING_MODE_HORIZONTAL, MEMORY_ADDRESSING_MODE_PAGE, MEMORY_ADDRESSING_MODE_VERTICAL } from './consts'
+import { MemoryAddressingMode } from './types'
 
-export class SDD1306Setup {
-    public constructor(private readonly cmd: (op: number) => void) {
-
-    }
+export class SSD1306Setup {
+    public constructor(private readonly cmd: (op: number) => void) { }
 
     public initialize(): void {
         this.setDisplayOff()
 
-        this.setContrastControl(0xcf)
+        this.setMemoryAddressingMode('page')
+        this.setContrastControl(0xff)
         this.setSegmentRemap()
         this.setInverseDisplay(false)
         this.setMultiplexRatio(0x3f)
         this.setCOMOutputScanDirection()
         this.setDisplayOffset(0x00)
-        this.setDisplayClock(0x80)
+        this.setDisplayClock(0xf0)
         this.setPreChargePeriod(0xf1)
         this.setCOMPinsHardwareConfiguration(0x12)
         this.setVCOMHDeselectLevel(0x40)
         this.setChargePump(0x14)
 
         this.setDisplayOn()
+    }
 
-        // this.cmd(0x00) /*set lower column address*/
-        // this.cmd(0x10) /*set higher column address*/
-        // this.cmd(0x40) /*set display start line*/
-        // this.cmd(0xB0) /*set page address*/
+    public setMemoryAddressingMode(mode: MemoryAddressingMode): void {
+        this.cmd(0x20)
+
+        switch (mode) {
+            case 'horizontal':
+                this.cmd(MEMORY_ADDRESSING_MODE_HORIZONTAL)
+                break
+
+            case 'vertical':
+                this.cmd(MEMORY_ADDRESSING_MODE_VERTICAL)
+                break
+
+            default:
+                this.cmd(MEMORY_ADDRESSING_MODE_PAGE)
+                break
+        }
     }
 
     public setDisplayOff(): void {
@@ -86,8 +97,8 @@ export class SDD1306Setup {
         this.cmd(value)
     }
 
-    public setDisplayOnOff(): void {
-        this.cmd(0xa4)
+    public setTestMode(test: boolean): void {
+        this.cmd(test ? 0xa5 : 0xa4)
     }
 
     public setDisplayOn(): void {
