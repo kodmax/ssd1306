@@ -63,8 +63,20 @@ export class SSD1306 {
         this.CS.setValue(1)
     }
 
-    public setContent(data: Uint8Array): void {
-        this.content.set(data)
+    public putContent(x: number, y: number, width: number, height: number, data: Uint8Array): void {
+        if ((x % 8) || (width % 8)) {
+            throw new RangeError('X and width must be 8 pixels aligned')
+        }
+
+        x >>= 3
+        width >>= 3
+        for (let row = 0; row < height; row++) {
+            this.content.set(data.slice(row * width, row * width + width), (y + row) * (this.width >> 3) + x)
+        }
+    }
+
+    public setContent(data: Uint8Array, offset = 0): void {
+        this.content.set(data, offset)
     }
 
     public clear(value: 0 | 1 = 0): void {
