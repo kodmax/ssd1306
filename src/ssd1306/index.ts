@@ -3,6 +3,7 @@ import { Pins } from './setup/pins'
 import { SPIDev } from 'spi-dev'
 import { SSD1306Setup } from './setup'
 import { convertLinearToPages } from './memory-mapping/convert-l2p'
+import { JsonBDFFont, print1Bit } from 'bdf-print'
 
 /**
  * @see https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
@@ -61,6 +62,10 @@ export class SSD1306 {
 
         this.spidev.transfer(1, Uint8Array.from([cmd]))
         this.CS.setValue(1)
+    }
+
+    public putText(font: JsonBDFFont, lineHeight: number, x: number, y: number, width: number, text: string): void {
+        this.putContent(x, y, width, lineHeight, print1Bit(font, lineHeight, width, text))
     }
 
     public putContent(x: number, y: number, width: number, height: number, data: Uint8Array): void {

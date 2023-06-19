@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "gpiod-client": "^1.2.1",
-    "js-pixel-fonts": "^1.6.0",
+    "bdf-print": "^1.0.2",
     "spi-dev": "^1.0.3"
   },
   "devDependencies": {
